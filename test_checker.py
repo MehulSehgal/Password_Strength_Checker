@@ -1,11 +1,3 @@
-"""
-Unit Tests — Password Strength Checker
-DecodeLabs Industrial Training Kit | Batch 2026
-
-Run: python -m pytest test_checker.py -v
-  or: python test_checker.py
-"""
-
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'python'))
@@ -17,34 +9,19 @@ from checker import (
     check_repeated_chars,
     calculate_strength
 )
-
-
-# ─────────────────────────────────────────────
-#  Length checks
-# ─────────────────────────────────────────────
-
 def test_length_too_short():
     result = check_length("abc")
     assert result["pass"] is False
-
 def test_length_exact_minimum():
-    result = check_length("abcdefgh")   # exactly 8
+    result = check_length("abcdefgh")
     assert result["pass"] is True
-
 def test_length_good():
-    result = check_length("MyPassword12")   # 12 chars
+    result = check_length("MyPassword12")
     assert result["pass"] is True
-
 def test_length_excellent():
     result = check_length("ThisIsAVeryLongPassword99!")
     assert result["pass"] is True
     assert result["length"] >= 16
-
-
-# ─────────────────────────────────────────────
-#  Character variety checks
-# ─────────────────────────────────────────────
-
 def test_variety_all_present():
     result = check_character_variety("Abc1@xyz")
     assert result["uppercase"] is True
@@ -52,7 +29,6 @@ def test_variety_all_present():
     assert result["digit"] is True
     assert result["symbol"] is True
     assert result["variety_score"] == 4
-
 def test_variety_only_lowercase():
     result = check_character_variety("abcdefgh")
     assert result["uppercase"] is False
@@ -60,92 +36,57 @@ def test_variety_only_lowercase():
     assert result["digit"] is False
     assert result["symbol"] is False
     assert result["variety_score"] == 1
-
 def test_variety_numbers_and_upper():
     result = check_character_variety("HELLO123")
     assert result["uppercase"] is True
     assert result["digit"] is True
     assert result["lowercase"] is False
     assert result["variety_score"] == 2
-
-
-# ─────────────────────────────────────────────
-#  Common password detection
-# ─────────────────────────────────────────────
-
 def test_common_password_detected():
     assert check_common_password("password") is True
     assert check_common_password("123456") is True
     assert check_common_password("letmein") is True
-
 def test_common_password_case_insensitive():
     assert check_common_password("PASSWORD") is True
     assert check_common_password("Password") is True
-
 def test_non_common_password():
     assert check_common_password("Tr0ub4dor&3") is False
     assert check_common_password("Xk9#mPqL!vR2") is False
-
-
-# ─────────────────────────────────────────────
-#  Repeated character detection
-# ─────────────────────────────────────────────
-
 def test_repeated_chars_detected():
     assert check_repeated_chars("aaabcde") is True
     assert check_repeated_chars("abc111xyz") is True
     assert check_repeated_chars("hello!!!") is True
-
 def test_no_repeated_chars():
     assert check_repeated_chars("abcABC123!") is False
-    assert check_repeated_chars("aabb") is False   # only 2 same in a row — OK
-
-
-# ─────────────────────────────────────────────
-#  Full strength calculation
-# ─────────────────────────────────────────────
-
+    assert check_repeated_chars("aabb") is False
 def test_weak_common_password():
     result = calculate_strength("password")
     assert result["strength"] == "WEAK"
-
 def test_weak_too_short():
     result = calculate_strength("Hi1!")
     assert result["strength"] == "WEAK"
-
 def test_weak_simple():
-    result = calculate_strength("abcdefgh")   # 8 chars, only lowercase
+    result = calculate_strength("abcdefgh")
     assert result["strength"] == "WEAK"
-
 def test_medium_password():
     result = calculate_strength("Admin1234")
-    assert result["strength"] in ("WEAK", "MEDIUM")   # no symbol → medium/weak boundary
-
+    assert result["strength"] in ("WEAK", "MEDIUM")
 def test_strong_password():
     result = calculate_strength("Tr0ub4dor&3!")
     assert result["strength"] == "STRONG"
-
 def test_strong_long_password():
     result = calculate_strength("Cyber$ecurity2026!DecodeLabs")
     assert result["strength"] == "STRONG"
-
 def test_empty_password():
     result = calculate_strength("")
     assert result["strength"] == "INVALID"
-
 def test_feedback_not_empty():
     result = calculate_strength("weakpass")
     assert len(result["feedback"]) > 0
-
 def test_score_non_negative():
-    # Score should never go below 0
-    result = calculate_strength("aaa")   # short + repeats
+    result = calculate_strength("aaa")
     assert result["score"] >= 0
 
-
-# ─────────────────────────────────────────────
-#  Manual runner (if not using pytest)
-# ─────────────────────────────────────────────
 if __name__ == "__main__":
     tests = [
         test_length_too_short,
