@@ -1,33 +1,12 @@
-"""
-Password Batch Analyzer — Pandas Edition
-DecodeLabs Industrial Training Kit | Batch 2026
-Project 1 | Cybersecurity Track
-
-This module:
-  - Reads a CSV of passwords
-  - Runs strength checks on each
-  - Generates a summary report
-  - Saves results to output CSV + prints stats
-
-Run: python analyze.py  (uses sample_passwords.csv by default)
-     python analyze.py my_passwords.csv
-"""
-
 import sys
 import os
 import pandas as pd
 from datetime import datetime
 
-# Import our core checker
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from checker import calculate_strength
 
-
 def load_passwords(filepath: str) -> pd.DataFrame:
-    """
-    Load passwords from a CSV file.
-    Expects a column named 'password'.
-    """
     try:
         df = pd.read_csv(filepath)
         if "password" not in df.columns:
@@ -58,17 +37,12 @@ def run_analysis(df: pd.DataFrame) -> pd.DataFrame:
     df["is_common"]    = results.apply(lambda r: r["details"]["is_common"])
     df["has_repeats"]  = results.apply(lambda r: r["details"]["has_repeats"])
     df["feedback"]     = results.apply(lambda r: " | ".join(r["feedback"]))
-
-    # Mask actual password in output (security hygiene)
     df["password_masked"] = df["password"].apply(lambda p: p[0] + "*" * (len(p)-2) + p[-1] if len(p) > 2 else "**")
 
     return df
 
 
 def print_summary(df: pd.DataFrame):
-    """
-    Print a human-readable summary to the terminal.
-    """
     total = len(df)
     counts = df["strength"].value_counts()
 
@@ -85,8 +59,6 @@ def print_summary(df: pd.DataFrame):
     print(f"  Common/leaked passwords   : {df['is_common'].sum()}")
     print(f"  With repeated chars       : {df['has_repeats'].sum()}")
     print("—" * 50)
-
-    # Variety breakdown
     print(f"\n  Character Variety (% of total passwords):")
     print(f"    Has uppercase  : {df['has_upper'].mean()*100:.1f}%")
     print(f"    Has lowercase  : {df['has_lower'].mean()*100:.1f}%")
@@ -96,15 +68,8 @@ def print_summary(df: pd.DataFrame):
 
 
 def save_report(df: pd.DataFrame, output_dir: str = "../reports"):
-    """
-    Save two output files:
-    1. Full detailed CSV (without raw password column)
-    2. Summary stats CSV
-    """
     os.makedirs(output_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-    # Drop raw password from output; keep masked version
     output_cols = [
         "password_masked", "strength", "score", "length",
         "has_upper", "has_lower", "has_digit", "has_symbol",
@@ -113,8 +78,6 @@ def save_report(df: pd.DataFrame, output_dir: str = "../reports"):
     detail_path = os.path.join(output_dir, f"analysis_detail_{timestamp}.csv")
     df[output_cols].to_csv(detail_path, index=False)
     print(f"  Detailed report saved → {detail_path}")
-
-    # Summary stats
     summary_data = {
         "metric": [
             "total", "strong", "medium", "weak",
