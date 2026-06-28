@@ -1,17 +1,6 @@
-"""
-Password Strength Checker — CLI Entry Point
-DecodeLabs Industrial Training Kit | Batch 2026
-Project 1 | Cybersecurity Track
-
-Run: python main.py
-"""
-
 import getpass
 import sys
 from checker import calculate_strength
-
-
-# ANSI color codes for terminal output — makes it readable
 GREEN  = "\033[92m"
 YELLOW = "\033[93m"
 RED    = "\033[91m"
@@ -32,8 +21,6 @@ STRENGTH_BANNER = {
     "STRONG":  "✅  STRONG PASSWORD — Good to go",
     "INVALID": "🚫  INVALID INPUT"
 }
-
-
 def print_banner():
     print(f"\n{BOLD}{CYAN}")
     print("=" * 55)
@@ -41,8 +28,6 @@ def print_banner():
     print("   DecodeLabs | Cybersecurity Project 1")
     print("=" * 55)
     print(RESET)
-
-
 def print_result(result: dict, password: str):
     strength = result["strength"]
     color    = STRENGTH_COLOR.get(strength, RESET)
@@ -54,8 +39,6 @@ def print_result(result: dict, password: str):
     print(f"  Score      : {result['score']} / 7")
     print(f"\n  {BOLD}{color}{banner}{RESET}")
     print(f"{'—' * 45}")
-
-    # Character variety breakdown
     v = result["details"].get("variety", {})
     if v:
         print(f"\n  Character Mix:")
@@ -63,8 +46,6 @@ def print_result(result: dict, password: str):
         print(f"    Lowercase : {'✓' if v['lowercase'] else '✗'}")
         print(f"    Numbers   : {'✓' if v['digit'] else '✗'}")
         print(f"    Symbols   : {'✓' if v['symbol'] else '✗'}")
-
-    # Feedback / suggestions
     if result["feedback"]:
         print(f"\n  Suggestions:")
         for tip in result["feedback"]:
@@ -74,10 +55,6 @@ def print_result(result: dict, password: str):
 
 
 def run_interactive():
-    """
-    Interactive mode — user keeps testing passwords until they quit.
-    Password input is hidden using getpass (no echo to terminal).
-    """
     print_banner()
     print("  Type a password to check its strength.")
     print("  Input is hidden for security.")
@@ -85,34 +62,22 @@ def run_interactive():
 
     while True:
         try:
-            # getpass hides the typed password — good practice
             password = getpass.getpass("  Enter password: ")
-
             if password.lower() in ("quit", "exit", "q"):
                 print(f"\n  {CYAN}Exiting. Stay secure! 🔒{RESET}\n")
                 break
-
             result = calculate_strength(password)
             print_result(result, password)
-
         except KeyboardInterrupt:
             print(f"\n\n  {CYAN}Interrupted. Stay secure! 🔒{RESET}\n")
             break
         except Exception as e:
             print(f"  {RED}Error: {e}{RESET}")
-
-
 def run_single(password: str):
-    """
-    Single-check mode — used when password is passed as CLI argument.
-    Not recommended for sensitive use (password visible in shell history).
-    """
     print_banner()
     result = calculate_strength(password)
     print_result(result, password)
     return result["strength"]
-
-
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         # e.g.: python main.py MyPassword123!
