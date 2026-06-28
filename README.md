@@ -160,5 +160,3 @@ Python 3.8+ required. C++17 for the C++ version.
 Password validation is the **gatekeeper before encryption**. A weak password, no matter how well it's hashed, is a security liability.
 
 ---
-
-*Built as part of the DecodeLabs Cybersecurity Industrial Training — Batch 2026*
