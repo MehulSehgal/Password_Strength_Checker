@@ -1,16 +1,3 @@
-/*
- * Password Strength Checker — C++ Implementation
- * DecodeLabs Industrial Training Kit | Batch 2026
- * Project 1 | Cybersecurity Track
- *
- * Compile:  g++ -std=c++17 -o checker checker.cpp
- * Run:      ./checker
- *
- * Mirrors the Python logic but in C++ — useful for seeing how
- * the same algorithm behaves across languages.
- * O(n) linear scan throughout — no regex, no heavy libraries.
- */
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -19,9 +6,6 @@
 #include <cctype>
 #include <iomanip>
 
-// ─────────────────────────────────────────────
-//  Common / leaked password list (small sample)
-// ─────────────────────────────────────────────
 const std::set<std::string> COMMON_PASSWORDS = {
     "password", "123456", "password123", "admin", "letmein",
     "qwerty", "abc123", "monkey", "1234567890", "superman",
@@ -30,7 +14,6 @@ const std::set<std::string> COMMON_PASSWORDS = {
     "password1", "12345678", "shadow", "football", "baseball"
 };
 
-// ANSI terminal colors
 const std::string RED    = "\033[91m";
 const std::string YELLOW = "\033[93m";
 const std::string GREEN  = "\033[92m";
@@ -38,10 +21,6 @@ const std::string CYAN   = "\033[96m";
 const std::string BOLD   = "\033[1m";
 const std::string RESET  = "\033[0m";
 
-
-// ─────────────────────────────────────────────
-//  Result struct — mirrors Python dict output
-// ─────────────────────────────────────────────
 struct CheckResult {
     std::string strength;     // WEAK / MEDIUM / STRONG
     int         score;
@@ -55,10 +34,6 @@ struct CheckResult {
     std::vector<std::string> feedback;
 };
 
-
-// ─────────────────────────────────────────────
-//  Helper: convert string to lowercase
-// ─────────────────────────────────────────────
 std::string to_lower(const std::string& s) {
     std::string result = s;
     std::transform(result.begin(), result.end(), result.begin(),
@@ -66,19 +41,11 @@ std::string to_lower(const std::string& s) {
     return result;
 }
 
-
-// ─────────────────────────────────────────────
-//  Check: is password in common list?
-// ─────────────────────────────────────────────
 bool is_common_password(const std::string& password) {
     std::string lower = to_lower(password);
     return COMMON_PASSWORDS.count(lower) > 0;
 }
 
-
-// ─────────────────────────────────────────────
-//  Check: three or more repeated consecutive chars
-// ─────────────────────────────────────────────
 bool has_repeated_chars(const std::string& password) {
     for (size_t i = 0; i + 2 < password.size(); ++i) {
         if (password[i] == password[i+1] && password[i+1] == password[i+2]) {
@@ -88,10 +55,6 @@ bool has_repeated_chars(const std::string& password) {
     return false;
 }
 
-
-// ─────────────────────────────────────────────
-//  Check: character variety (single linear pass)
-// ─────────────────────────────────────────────
 void check_variety(const std::string& password,
                    bool& has_upper, bool& has_lower,
                    bool& has_digit, bool& has_symbol) {
@@ -99,8 +62,6 @@ void check_variety(const std::string& password,
     has_lower  = false;
     has_digit  = false;
     has_symbol = false;
-
-    // Symbols = printable chars that aren't letters or digits
     std::string symbols = "!@#$%^&*()-_=+[]{}|;:',.<>?/`~\"\\";
 
     for (char c : password) {
@@ -111,10 +72,6 @@ void check_variety(const std::string& password,
     }
 }
 
-
-// ─────────────────────────────────────────────
-//  Master strength calculator
-// ─────────────────────────────────────────────
 CheckResult calculate_strength(const std::string& password) {
     CheckResult result;
     result.length = static_cast<int>(password.size());
@@ -126,7 +83,6 @@ CheckResult calculate_strength(const std::string& password) {
         return result;
     }
 
-    // --- Length check ---
     if (result.length < 8) {
         result.feedback.push_back("Too short — minimum 8 characters required.");
     } else if (result.length >= 16) {
@@ -136,15 +92,12 @@ CheckResult calculate_strength(const std::string& password) {
     } else {
         result.score += 1;
     }
-
-    // --- Common password check ---
     result.is_common = is_common_password(password);
     if (result.is_common) {
         result.feedback.push_back("Commonly used password — easily cracked.");
         result.score = 0;
     }
 
-    // --- Character variety ---
     check_variety(password,
                   result.has_upper, result.has_lower,
                   result.has_digit, result.has_symbol);
@@ -160,7 +113,6 @@ CheckResult calculate_strength(const std::string& password) {
     if (!result.has_symbol) result.feedback.push_back("Add a symbol (e.g. @, #, !).");
     if (!result.has_lower)  result.feedback.push_back("Add a lowercase letter.");
 
-    // --- Repeated chars ---
     result.has_repeats = has_repeated_chars(password);
     if (result.has_repeats) {
         result.score -= 1;
@@ -169,7 +121,6 @@ CheckResult calculate_strength(const std::string& password) {
 
     result.score = std::max(0, result.score);
 
-    // --- Final classification ---
     if (result.is_common || result.length < 8) {
         result.strength = "WEAK";
     } else if (result.score <= 3) {
@@ -188,9 +139,6 @@ CheckResult calculate_strength(const std::string& password) {
 }
 
 
-// ─────────────────────────────────────────────
-//  Display result to terminal
-// ─────────────────────────────────────────────
 void print_result(const CheckResult& r, const std::string& password) {
     std::string color;
     std::string banner;
@@ -231,10 +179,6 @@ void print_result(const CheckResult& r, const std::string& password) {
     std::cout << "\n" << std::string(47, '-') << "\n\n";
 }
 
-
-// ─────────────────────────────────────────────
-//  Main — interactive CLI loop
-// ─────────────────────────────────────────────
 int main() {
     std::cout << "\n" << BOLD << CYAN;
     std::cout << "=======================================================\n";
