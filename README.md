@@ -117,7 +117,6 @@ python -m pytest test_checker.py -v
 ```
 =======================================================
    🔐  PASSWORD STRENGTH CHECKER
-   DecodeLabs | Cybersecurity Project 1
 =======================================================
 
 Enter password: ********
