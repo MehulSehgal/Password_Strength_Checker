@@ -188,9 +188,7 @@ int main() {
     std::cout << RESET;
     std::cout << "  Type a password to check its strength.\n";
     std::cout << "  Type 'quit' to exit.\n\n";
-
     std::string password;
-
     while (true) {
         std::cout << "  Enter password: ";
 
