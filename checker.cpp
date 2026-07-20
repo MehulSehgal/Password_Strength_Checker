@@ -13,14 +13,12 @@ const std::set<std::string> COMMON_PASSWORDS = {
     "welcome", "login", "admin123", "pass", "test123",
     "password1", "12345678", "shadow", "football", "baseball"
 };
-
 const std::string RED    = "\033[91m";
 const std::string YELLOW = "\033[93m";
 const std::string GREEN  = "\033[92m";
 const std::string CYAN   = "\033[96m";
 const std::string BOLD   = "\033[1m";
 const std::string RESET  = "\033[0m";
-
 struct CheckResult {
     std::string strength;     // WEAK / MEDIUM / STRONG
     int         score;
